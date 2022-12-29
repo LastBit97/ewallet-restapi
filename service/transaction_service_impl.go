@@ -47,3 +47,7 @@ func (ts *TransactionServiceImpl) Send(trans *model.CreateTransactionRequest) (*
 	}
 	return newTransaction, nil
 }
+
+func (ts *TransactionServiceImpl) GetTransactions(count int) ([]*model.Transaction, error) {
+	return ts.transactionRepository.GetTransactions(count)
+}
