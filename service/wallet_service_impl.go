@@ -25,3 +25,7 @@ func (ws *WalletServiceImpl) CreateWallets() ([]*model.Wallet, error) {
 	}
 	return ws.walletRepository.CreateWallets(wallets)
 }
+
+func (ws *WalletServiceImpl) GetWallet(address string) (*model.Wallet, error) {
+	return ws.walletRepository.FindWalletByAddress(address)
+}

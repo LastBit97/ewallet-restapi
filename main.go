@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/LastBit97/ewallet-restapi/config"
+	"github.com/LastBit97/ewallet-restapi/handler"
 	"github.com/LastBit97/ewallet-restapi/repository"
 	"github.com/LastBit97/ewallet-restapi/service"
 	"github.com/gin-gonic/gin"
@@ -22,6 +23,7 @@ var (
 	walletCollection *mongo.Collection
 	walletRepository repository.WalletRepository
 	walletService    service.WalletService
+	walletHandler    handler.Handler
 )
 
 func init() {
@@ -48,6 +50,7 @@ func init() {
 	walletCollection = mongoclient.Database("mongodb").Collection("wallets")
 	walletRepository = repository.NewWalletRepository(walletCollection, ctx)
 	walletService = service.NewDanceService(walletRepository)
+	walletHandler = handler.NewHandler(walletService)
 
 	server = gin.Default()
 }
@@ -78,5 +81,6 @@ func main() {
 			log.Printf("Create wallet with address: %s\n", wallet.Address)
 		}
 	}
+	walletHandler.InitRoutes(router)
 	log.Fatal(server.Run(":" + config.Port))
 }

@@ -45,6 +45,20 @@ func (wm *WalletMongo) CreateWallets(wallets []*model.Wallet) ([]*model.Wallet, 
 	return newWallets, nil
 }
 
+func (wm *WalletMongo) FindWalletByAddress(address string) (*model.Wallet, error) {
+	var wallet *model.Wallet
+	query := bson.M{"address": address}
+	err := wm.walletCollection.FindOne(wm.ctx, query).Decode(&wallet)
+
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return &model.Wallet{}, err
+		}
+		return nil, err
+	}
+	return wallet, nil
+}
+
 func (wm *WalletMongo) UpdateWallet(address string, data *model.Wallet) (*model.Wallet, error) {
 	return nil, nil
 }
