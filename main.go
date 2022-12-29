@@ -20,10 +20,13 @@ var (
 	ctx         context.Context
 	mongoclient *mongo.Client
 
-	walletCollection *mongo.Collection
-	walletRepository repository.WalletRepository
-	walletService    service.WalletService
-	walletHandler    handler.Handler
+	walletCollection      *mongo.Collection
+	transactionCollection *mongo.Collection
+	walletRepository      repository.WalletRepository
+	transactionRepository repository.TransactionRepository
+	walletService         service.WalletService
+	transactionService    service.TransactionService
+	ewalletHandler        handler.Handler
 )
 
 func init() {
@@ -48,9 +51,12 @@ func init() {
 	log.Println("MongoDB successfully connected...")
 
 	walletCollection = mongoclient.Database("mongodb").Collection("wallets")
+	transactionCollection = mongoclient.Database("mongodb").Collection("transactions")
 	walletRepository = repository.NewWalletRepository(walletCollection, ctx)
+	transactionRepository = repository.NewTransactionRepository(transactionCollection, ctx)
 	walletService = service.NewDanceService(walletRepository)
-	walletHandler = handler.NewHandler(walletService)
+	transactionService = service.NewTransactionService(transactionRepository, walletRepository)
+	ewalletHandler = handler.NewHandler(walletService, transactionService)
 
 	server = gin.Default()
 }
@@ -81,6 +87,6 @@ func main() {
 			log.Printf("Create wallet with address: %s\n", wallet.Address)
 		}
 	}
-	walletHandler.InitRoutes(router)
+	ewalletHandler.InitRoutes(router)
 	log.Fatal(server.Run(":" + config.Port))
 }

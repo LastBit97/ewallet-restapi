@@ -1,6 +1,8 @@
 package service
 
 import (
+	"time"
+
 	"github.com/LastBit97/ewallet-restapi/model"
 	"github.com/LastBit97/ewallet-restapi/repository"
 	"github.com/LastBit97/ewallet-restapi/utils"
@@ -18,8 +20,9 @@ func (ws *WalletServiceImpl) CreateWallets() ([]*model.Wallet, error) {
 	wallets := make([]*model.Wallet, 0, 10)
 	for i := 0; i < cap(wallets); i++ {
 		wallet := &model.Wallet{
-			Address: utils.RandomString(64),
-			Balance: 100,
+			Address:  utils.RandomString(64),
+			Balance:  100,
+			CreateAt: time.Now(),
 		}
 		wallets = append(wallets, wallet)
 	}
