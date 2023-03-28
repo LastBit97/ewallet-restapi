@@ -4,11 +4,13 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/LastBit97/ewallet-restapi/config"
 	"github.com/LastBit97/ewallet-restapi/handler"
 	"github.com/LastBit97/ewallet-restapi/repository"
 	"github.com/LastBit97/ewallet-restapi/service"
+	"github.com/getsentry/sentry-go"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -33,6 +35,14 @@ func init() {
 	config, err := config.LoadConfig(".")
 	if err != nil {
 		log.Fatal("Could not load environment variables", err)
+	}
+
+	err = sentry.Init(sentry.ClientOptions{
+		Dsn:              "https://9ace5290285b413bbbd534c8ca39e1fc@o4504917501804544.ingest.sentry.io/4504917504819200",
+		TracesSampleRate: 1.0,
+	})
+	if err != nil {
+		log.Fatalf("sentry.Init: %s", err)
 	}
 
 	ctx = context.TODO()
@@ -66,6 +76,10 @@ func main() {
 	if err != nil {
 		log.Fatal("Could not load config", err)
 	}
+
+	defer sentry.Flush(2 * time.Second)
+
+	sentry.CaptureMessage("It works!")
 
 	defer mongoclient.Disconnect(ctx)
 
