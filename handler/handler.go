@@ -6,6 +6,7 @@ import (
 
 	"github.com/LastBit97/ewallet-restapi/model"
 	"github.com/LastBit97/ewallet-restapi/service"
+	"github.com/getsentry/sentry-go"
 	"github.com/gin-gonic/gin"
 )
 
@@ -59,11 +60,16 @@ func (h *Handler) GetLast(ctx *gin.Context) {
 		return
 	}
 
+	span := sentry.StartSpan(ctx, "my_span")
+	defer span.Finish()
+
 	transactions, err := h.transactionService.GetTransactions(intCount)
 	if err != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"status": "fail", "message": err.Error()})
 		return
 	}
+
+	span.Finish()
 
 	ctx.JSON(http.StatusOK, gin.H{"status": "success", "results": len(transactions), "data": transactions})
 }

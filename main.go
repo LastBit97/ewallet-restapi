@@ -39,6 +39,7 @@ func init() {
 
 	err = sentry.Init(sentry.ClientOptions{
 		Dsn:              "https://9ace5290285b413bbbd534c8ca39e1fc@o4504917501804544.ingest.sentry.io/4504917504819200",
+		EnableTracing:    true,
 		TracesSampleRate: 1.0,
 	})
 	if err != nil {
@@ -103,4 +104,6 @@ func main() {
 	}
 	ewalletHandler.InitRoutes(router)
 	log.Fatal(server.Run(":" + config.Port))
+
+	// код для вывода hello
 }
